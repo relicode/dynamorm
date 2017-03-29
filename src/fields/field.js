@@ -26,11 +26,14 @@ export default class Field {
 
       // If the rule is a function, then apply the function with value
       // If the rule is a RegExp or a string, then test value against generated RegExp
-      return (
-        typeof rule === 'function' ?
-        ((value) => rule(value)) :
-        ((value) => new RegExp(rule).test(value))
-      )
+      return ({
+        test: (
+          typeof rule === 'function' ?
+          ((value) => rule(value)) :
+          ((value) => new RegExp(rule).test(value))
+        ),
+        errorMessage: description
+      })
     })
     if (!this.validators.length) {
       throw new Error('This class has no validators!')
@@ -48,11 +51,18 @@ export default class Field {
     return false
   }
 
+  getValidationErrors() {
+    return this.validators.map((v) => (
+      v.test(this.value) ? null : v.errorMessage
+    ))
+    .filter((errorMessage) => errorMessage !== null)
+  }
+
   validate() {
     return (
       this.directValidate() ||
       this.validators.reduce((acc, validator) => (
-        validator(this.value) && acc
+        validator.test(this.value) && acc
       ), true)
     )
   }

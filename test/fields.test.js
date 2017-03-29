@@ -94,3 +94,25 @@ test('Validation fails with a null value', () => {
   expect(textField.validate()).toBe(true)
 })
 
+test('Gives multiple validation error messages when validation is failing', () => {
+  const NEEDS_TO_CONTAIN_AN_X = 'needs to contain an "x"'
+  const NEEDS_TO_CONTAIN_AN_Y = 'needs to contain an "y"'
+
+  class MockTextField extends Field {
+    constructor(options) {
+      const validators = [
+        { description: NEEDS_TO_CONTAIN_AN_X, rule: 'x' },
+        { description: NEEDS_TO_CONTAIN_AN_Y, rule: 'y' }
+      ]
+      super(validators, options)
+    }
+  }
+
+  const textField = new MockTextField({ initialValue: 'ab' })
+  expect(textField.validate()).toBe(false)
+  expect(textField.getValidationErrors()).toEqual([
+    NEEDS_TO_CONTAIN_AN_X,
+    NEEDS_TO_CONTAIN_AN_Y
+  ])
+})
+
