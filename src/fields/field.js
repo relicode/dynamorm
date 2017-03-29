@@ -8,7 +8,7 @@ export default class Field {
     }
     */
 
-    const { initialValue } = options
+    const { initialValue, allowNull } = options
     
     // Constructs the fields' validator functions
     this.validators = [].concat(validators).map((v) => {
@@ -37,12 +37,24 @@ export default class Field {
     }
 
     this.value = initialValue
+    this.allowNull = allowNull
   }
-  
+
+  directValidate() {
+    // Allow both null and undefined values
+    if (this.allowNull && this.value == null) {
+      return true
+    }
+    return false
+  }
+
   validate() {
-    return this.validators.reduce((acc, validator) => (
-      validator(this.value) && acc
-    ), true)
+    return (
+      this.directValidate() ||
+      this.validators.reduce((acc, validator) => (
+        validator(this.value) && acc
+      ), true)
+    )
   }
 
 }
