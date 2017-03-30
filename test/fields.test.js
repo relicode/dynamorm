@@ -146,3 +146,29 @@ test('TextField only accepts strings', () => {
   expect(myTextField.validate()).toBe(false)
 })
 
+test('hashKey, partitionKey and sortKey set properly', () => {
+  const myTextField = new TextField({
+    partitionKey: true
+  })
+  expect(myTextField.hashKey).toBe(true)
+  
+  const myTextField2 = new TextField({
+    hashKey: true
+  })
+  expect(myTextField2.hashKey).toBe(true)
+
+  const myTextField3 = new TextField({
+    sortKey: true
+  })
+  expect(myTextField3.sortKey).toBe(true)
+})
+
+test('Throws error when trying to use field as both primary key and sort key', () => {
+  expect(() => {
+    new TextField({
+      partitionKey: true,
+      sortKey: true
+    })
+  }).toThrowError('Sort key cannot be the same as primary key')
+})
+

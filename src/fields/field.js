@@ -8,7 +8,14 @@ export default class Field {
     }
     */
 
-    const { initialValue, allowNull, allowEmpty } = options
+    const {
+      allowEmpty,
+      allowNull,
+      hashKey,
+      initialValue,
+      partitionKey,
+      sortKey
+    } = options
     
     // Constructs the fields' validator functions
     this.validators = [].concat(validators).map((v) => {
@@ -37,6 +44,15 @@ export default class Field {
     })
     if (!this.validators.length) {
       throw new Error('This class has no validators!')
+    }
+
+    if (partitionKey || hashKey) {
+      this.partitionKey = true
+      this.hashKey = true
+    }
+    this.sortKey = sortKey
+    if (this.sortKey && (this.sortKey === this.partitionKey)) {
+      throw new Error('Sort key cannot be the same as primary key')
     }
 
     this.breakingValidators = {
