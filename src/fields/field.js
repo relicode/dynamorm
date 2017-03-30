@@ -8,7 +8,7 @@ export default class Field {
     }
     */
 
-    const { initialValue, allowNull } = options
+    const { initialValue, allowNull, allowEmpty } = options
     
     // Constructs the fields' validator functions
     this.validators = [].concat(validators).map((v) => {
@@ -39,32 +39,41 @@ export default class Field {
       throw new Error('This class has no validators!')
     }
 
+    this.breakingValidators = {
+      allowNull, allowEmpty
+    }
     this.value = initialValue
-    this.allowNull = allowNull
   }
 
-  directValidate() {
-    // Allow both null and undefined values
-    if (this.allowNull && this.value == null) {
+  // Strong validators, that interrupt the checking process if passing
+  checkBreakingValidators() {
+    const { allowNull, allowEmpty } = this.breakingValidators
+    const { value } = this
+
+    if (allowNull && value == null) { // allow both null and undefined
       return true
     }
+
+    if (allowEmpty && typeof value === 'string' && value.length === 0) {
+      return true
+    }
+
     return false
   }
 
   getValidationErrors() {
-    return this.validators.map((v) => (
-      v.test(this.value) ? null : v.errorMessage
-    ))
-    .filter((errorMessage) => errorMessage !== null)
+    return (
+      this.checkBreakingValidators() ?
+      [] :
+      this.validators.map((v) => (
+        v.test(this.value) ? null : v.errorMessage
+      ))
+      .filter((errorMessage) => errorMessage !== null)
+    )
   }
 
   validate() {
-    return (
-      this.directValidate() ||
-      this.validators.reduce((acc, validator) => (
-        validator.test(this.value) && acc
-      ), true)
-    )
+    return this.getValidationErrors().length === 0
   }
 
 }

@@ -77,6 +77,23 @@ test('Validation passes with an undefined value if allowed explicitly', () => {
   expect(textField.validate()).toBe(true)
 })
 
+test('Validation passes with an empty string if allowed explicitly', () => {
+  class MockTextField extends Field {
+    constructor(options) {
+      const validators = [
+        { description: 'needs to contain an "x"', rule: 'x' },
+      ]
+      super(validators, options)
+    }
+  }
+
+  const textField = new MockTextField({ initialValue: '', allowEmpty: true })
+  expect(textField.validate()).toBe(true)
+
+  textField.value = 'OExyEH'
+  expect(textField.validate()).toBe(true)
+})
+
 test('Validation fails with a null value', () => {
   class MockTextField extends Field {
     constructor(options) {
