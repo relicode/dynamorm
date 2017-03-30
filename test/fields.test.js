@@ -1,4 +1,4 @@
-import Field from '../src/fields'
+import Field, { TextField } from '../src/fields'
 
 
 // Disabled since this is not supported by uglify
@@ -131,5 +131,18 @@ test('Gives multiple validation error messages when validation is failing', () =
     NEEDS_TO_CONTAIN_AN_X,
     NEEDS_TO_CONTAIN_AN_Y
   ])
+})
+
+test('TextField only accepts strings', () => {
+  const myTextField = new TextField({ allowEmpty: true })
+  
+  myTextField.value = 'XD'
+  expect(myTextField.validate()).toBe(true)
+  
+  myTextField.value = ''
+  expect(myTextField.validate()).toBe(true)
+
+  myTextField.value = {}
+  expect(myTextField.validate()).toBe(false)
 })
 
