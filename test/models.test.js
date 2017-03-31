@@ -1,5 +1,5 @@
-import { TextField } from '../src/fields'
 import Model from '../src/models'
+import { TextField } from '../src/fields'
 
 
 class MockModel extends Model {
@@ -90,34 +90,48 @@ test('Model saving works', async () => {
   const KEY_FIELD_VALUE = 'KEY_FIELD_VALUE'
   const TEXT_FIELD_VALUE = 'TEXT_FIELD_VALUE'
   
-  expect(model.getTableName()).toBe('CONSTRUCTED-FROM-ENV-VARS-MockModel')
+  expect(model.getTableName()).toBe('generated-table-name')
 
-  const resp = await model.save()
-  console.log(resp)
-
-  /*
-  model.set({
-    nullableField: 123
+  model.save().catch((e) => {
+    expect(e).toBe('CAN\'T BE SAVED')
   })
+
+  try {
+    await model.save()
+  } catch(e) {
+    expect(e).toBe('CAN\'T BE SAVED')
+  }
+
+  expect(model.getValidationErrors()).toEqual(
+    [
+      {
+        name: 'keyField',
+        errors: [
+          'Needs to be a string'
+        ],
+        value: undefined
+      },
+      {
+        name: 'myTextField',
+        errors: [
+          'Needs to be a string'
+        ],
+        value: undefined
+      }
+    ]
+  )
 
   model.set({
     keyField: KEY_FIELD_VALUE,
-    myTextField: TEXT_FIELD_VALUE,
-    nullableField: null
+    myTextField: TEXT_FIELD_VALUE
   })
- 
 
-
-  expect(model.validate()).toBe(false)
-
-  expect(model.getValidationErrors()).toEqual([
-    {
-      name: 'nullableField',
-      errors: ['Needs to be a string'],
-      value: 123
-    }
-  ])
-  */
+  try {
+    const r = await model.save()
+    expect(r).toBe('SAVED!')
+  } catch(e) {
+    e
+  }
 
 })
 

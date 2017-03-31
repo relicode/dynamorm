@@ -41,7 +41,6 @@ test('Validation working with a function validator', () => {
   expect(textField.validate()).toBe(false)
 })
 
-
 test('Validation working with an array validator', () => {
   class MockTextField extends Field {
     constructor(options) {
