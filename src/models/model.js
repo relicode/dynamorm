@@ -22,7 +22,22 @@ export default class Model {
     this.tableName = options.tableName || 'generated-table-name'
   }
 
-  getValidationErrors = () => {
+  get(...fields) {
+    const fieldNames = fields.length ? fields : Object.keys(this.fields)
+    const values = {}
+
+    for (const fieldName of fieldNames) {
+      if (!this.fields.hasOwnProperty(fieldName)) {
+        throw new Error(`Field ${fieldName} not found.`)
+      }
+      values[fieldName] = this.fields[fieldName].value
+    }
+
+    // Only return the value instead of object when querying for a single value
+    return Object.keys(values).length === 1 ? values[fields[0]] : values
+  }
+
+  getValidationErrors() {
     return Object.entries(this.fields).map((f) => {
       const name = f[0]
       const field = f[1]
