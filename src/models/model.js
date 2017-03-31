@@ -37,6 +37,11 @@ export default class Model {
     return Object.keys(values).length === 1 ? values[fields[0]] : values
   }
 
+  getTableName() {
+    const prefix = 'CONSTRUCTED-FROM-ENV-VARS'
+    return this.tableName || `${prefix}-${this.constructor.name}`
+  }
+
   getValidationErrors() {
     return Object.entries(this.fields).map((f) => {
       const name = f[0]
