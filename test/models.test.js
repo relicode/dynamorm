@@ -57,7 +57,6 @@ test('Model field value setting and changing works', () => {
   })
 })
 
-/*
 test('Model validation works', () => {
   const model = new MockModel()
   const KEY_FIELD_VALUE = 'KEY_FIELD_VALUE'
@@ -70,6 +69,20 @@ test('Model validation works', () => {
   })
  
   expect(model.validate()).toBe(true)
+
+  model.set({
+    nullableField: 123
+  })
+
+  expect(model.validate()).toBe(false)
+
+  expect(model.getValidationErrors()).toEqual([
+    {
+      name: 'nullableField',
+      errors: ['Needs to be a string'],
+      value: 123
+    }
+  ])
+
 })
-*/
 

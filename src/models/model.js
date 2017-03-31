@@ -50,9 +50,7 @@ export default class Model {
           value: field.value
         }
       )
-    }).filter((f) => {
-      f !== null
-    })
+    }).filter((f) => f !== null)
   }
 
   save() {
