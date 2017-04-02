@@ -92,12 +92,12 @@ test('Model saving works', async () => {
   
   expect(MockModel.getTableName()).toBe('CONSTRUCTED-FROM-ENV-VARS-MockModel')
 
-  model.save().catch((e) => {
+  model.dbSave().catch((e) => {
     expect(e).toBe('CAN\'T BE SAVED')
   })
 
   try {
-    await model.save()
+    await model.dbSave()
   } catch(e) {
     expect(e).toBe('CAN\'T BE SAVED')
   }
@@ -127,10 +127,31 @@ test('Model saving works', async () => {
   })
 
   try {
-    const r = await model.save()
+    const r = await model.dbSave()
     expect(r).toBe('SAVED!')
   } catch(e) {
     e
+  }
+
+})
+
+/* Requires appropriate DB data */
+test('Model instance getting works', async () => {
+  const params = {
+    TableName: 'anssin-lelutaulu',
+    key: {
+      ykkosAvain: 1
+    }
+  }
+
+  try {
+    const resp = await MockModel.dbGet(params)
+    expect(resp).toEqual({
+      munStrinki: 'vmdvnomivdnoivd noidfnoivnoivdnoidv',
+      ykkosAvain: 1
+    })
+  } catch(e) {
+    console.log(e)
   }
 
 })

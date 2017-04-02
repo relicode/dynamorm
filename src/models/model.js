@@ -1,12 +1,27 @@
 import AWS from 'aws-sdk'
 
 
+const docClient = new AWS.DynamoDB.DocumentClient({
+  region: 'eu-west-1'
+})
+
 export default class Model {
-  static get(options={}) {
-    const hashKey = options.hasOwnProperty('hashKey') ? options.hashKey : options.partitionKey
-    if (!hashKey) {
-      throw new Error('New')
+  static dbGet(options={}) {
+    const key = options.key
+    if (!key) {
+      throw new Error('No key provided')
     }
+
+    const params = {
+      TableName: this.getTableName(),
+      Key: options.key,
+      ...options
+    }
+
+    return docClient.get(params).promise()
+      .then((resp) => (
+        resp.Item
+      ))
   }
 
   static getTableName() {
@@ -14,12 +29,11 @@ export default class Model {
     return this.tableName || `${prefix}-${this.name}`
   }
 
-  constructor(fields, options={}) {
+  constructor(fields) {
     if (typeof fields !== 'object' || fields === null) {
       throw new Error('No fields object provided!')
     }
 
-    this.docClient = options.docClient || new AWS.DynamoDB.DocumentClient(options)
     this.fields = fields
 
     const partitionKey = Object.entries(fields).find((f) => (
@@ -65,7 +79,7 @@ export default class Model {
     }).filter((f) => f !== null)
   }
 
-  save() {
+  dbSave() {
     return new Promise((resolve, reject) => (
       this.validate() ?
       resolve('SAVED!') :
