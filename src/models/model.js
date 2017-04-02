@@ -2,6 +2,18 @@ import AWS from 'aws-sdk'
 
 
 export default class Model {
+  static get(options={}) {
+    const hashKey = options.hasOwnProperty('hashKey') ? options.hashKey : options.partitionKey
+    if (!hashKey) {
+      throw new Error('New')
+    }
+  }
+
+  static getTableName() {
+    const prefix = 'CONSTRUCTED-FROM-ENV-VARS'
+    return this.tableName || `${prefix}-${this.name}`
+  }
+
   constructor(fields, options={}) {
     if (typeof fields !== 'object' || fields === null) {
       throw new Error('No fields object provided!')
@@ -19,7 +31,6 @@ export default class Model {
     ))
 
     this.primaryKey = { partitionKey, sortKey }
-    this.tableName = options.tableName || 'generated-table-name'
   }
 
   get(...fields) {
@@ -37,10 +48,6 @@ export default class Model {
     return Object.keys(values).length === 1 ? values[fields[0]] : values
   }
 
-  getTableName() {
-    const prefix = 'CONSTRUCTED-FROM-ENV-VARS'
-    return this.tableName || `${prefix}-${this.constructor.name}`
-  }
 
   getValidationErrors() {
     return Object.entries(this.fields).map((f) => {

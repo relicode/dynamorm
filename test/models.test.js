@@ -90,7 +90,7 @@ test('Model saving works', async () => {
   const KEY_FIELD_VALUE = 'KEY_FIELD_VALUE'
   const TEXT_FIELD_VALUE = 'TEXT_FIELD_VALUE'
   
-  expect(model.getTableName()).toBe('generated-table-name')
+  expect(MockModel.getTableName()).toBe('CONSTRUCTED-FROM-ENV-VARS-MockModel')
 
   model.save().catch((e) => {
     expect(e).toBe('CAN\'T BE SAVED')
