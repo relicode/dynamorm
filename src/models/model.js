@@ -79,6 +79,14 @@ export default class Model {
     }).filter((f) => f !== null)
   }
 
+  getFieldValues() {
+    const fields = {}
+    for (const field of Object.entries(this.fields)) {
+      fields[field[0]] = field[1].value
+    }
+    return fields
+  }
+
   dbSave() {
     return new Promise((resolve, reject) => (
       this.validate() ?

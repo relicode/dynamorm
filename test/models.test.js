@@ -151,8 +151,25 @@ test('Model instance getting works', async () => {
       ykkosAvain: 1
     })
   } catch(e) {
-    console.log(e)
+    (e)
   }
+})
 
+test('getFieldValues returns name-value object', () => {
+  const model = new MockModel()
+  const KEY_FIELD_VALUE = 'KEY_FIELD_VALUE'
+  const TEXT_FIELD_VALUE = 'TEXT_FIELD_VALUE'
+
+  model.set({
+    keyField: KEY_FIELD_VALUE,
+    myTextField: TEXT_FIELD_VALUE,
+    nullableField: null
+  })
+
+  expect(model.getFieldValues()).toEqual({
+    keyField: KEY_FIELD_VALUE,
+    myTextField: TEXT_FIELD_VALUE,
+    nullableField: null
+  })
 })
 
