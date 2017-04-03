@@ -13,6 +13,8 @@ class MockModel extends Model {
   }
 }
 
+MockModel.tableName = 'anssin-lelutaulu'
+
 test('Model field value setting and changing works', () => {
   const model = new MockModel()
   const KEY_FIELD_VALUE = 'KEY_FIELD_VALUE'
@@ -90,16 +92,16 @@ test('Model saving works', async () => {
   const KEY_FIELD_VALUE = 'KEY_FIELD_VALUE'
   const TEXT_FIELD_VALUE = 'TEXT_FIELD_VALUE'
   
-  expect(MockModel.getTableName()).toBe('CONSTRUCTED-FROM-ENV-VARS-MockModel')
+  expect(MockModel.getTableName()).toBe('anssin-lelutaulu')
 
   model.dbSave().catch((e) => {
-    expect(e).toBe('CAN\'T BE SAVED')
+    expect(e).toBe('Invalid field data')
   })
 
   try {
     await model.dbSave()
   } catch(e) {
-    expect(e).toBe('CAN\'T BE SAVED')
+    expect(e).toBe('Invalid field data')
   }
 
   expect(model.getValidationErrors()).toEqual(
@@ -138,24 +140,23 @@ test('Model saving works', async () => {
 /* Requires appropriate DB data */
 test('Model instance getting works', async () => {
   const params = {
-    TableName: 'anssin-lelutaulu',
     key: {
-      ykkosAvain: 1
+      keyField: 'KEY VALUE'
     }
   }
 
   try {
     const resp = await MockModel.dbGet(params)
     expect(resp).toEqual({
-      munStrinki: 'vmdvnomivdnoivd noidfnoivnoivdnoidv',
-      ykkosAvain: 1
+      myTextField: 'MY TEXT VALUE',
+      keyField: 'KEY VALUE'
     })
   } catch(e) {
     (e)
   }
 })
 
-test('getFieldValues returns name-value object', () => {
+test('getFieldValues returns name-value object', async () => {
   const model = new MockModel()
   const KEY_FIELD_VALUE = 'KEY_FIELD_VALUE'
   const TEXT_FIELD_VALUE = 'TEXT_FIELD_VALUE'
@@ -171,5 +172,13 @@ test('getFieldValues returns name-value object', () => {
     myTextField: TEXT_FIELD_VALUE,
     nullableField: null
   })
+
+  try {
+    const data = await model.dbSave()
+    expect(data).toBe('Success')
+  } catch (e) {
+    console.log(e)
+  }
+
 })
 

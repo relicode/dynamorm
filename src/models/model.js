@@ -87,12 +87,26 @@ export default class Model {
     return fields
   }
 
-  dbSave() {
-    return new Promise((resolve, reject) => (
-      this.validate() ?
-      resolve('SAVED!') :
-      reject('CAN\'T BE SAVED')
-    ))
+  dbSave(options={}) {
+    const params = {
+      TableName: this.constructor.getTableName(),
+      Item: this.getFieldValues(),
+      ReturnValues: 'NONE',
+      ...options
+    }
+
+    return new Promise((resolve, reject) => {
+      if (this.validate()) {
+        return docClient.put(params).promise()
+          .then((data) => {
+            return resolve('Success')
+          })
+          .catch((error) => {
+            return reject(error)
+          })
+      }
+      return reject('Invalid field data')
+    })
   }
 
   set(fieldValues) {
