@@ -100,8 +100,8 @@ export class DbModel extends Model {
     return this.tableName || `${prefix}-${this.name}`
   }
 
-  constructor(fields) {
-    super(fields)
+  constructor(fields, initialValues={}) {
+    super(fields, initialValues)
     const partitionKey = Object.entries(fields).find((f) => (
       f[1].partitionKey || f[1].hashKey
     ))

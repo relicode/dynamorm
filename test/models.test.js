@@ -71,6 +71,22 @@ test('Model field value setting and changing works', () => {
   })
 })
 
+test('DbModel initial value setting works', () => {
+  const KEY_FIELD_VALUE = 'KEY_FIELD_VALUE'
+  const TEXT_FIELD_VALUE = 'TEXT_FIELD_VALUE'
+  const model = new MockDbModel({
+    keyField: KEY_FIELD_VALUE,
+    myTextField: TEXT_FIELD_VALUE,
+    nullableField: null
+  })
+
+  expect(model.get()).toEqual({
+    keyField: KEY_FIELD_VALUE,
+    myTextField: TEXT_FIELD_VALUE,
+    nullableField: null
+  })
+})
+
 test('Model validation works', () => {
   const model = new MockModel()
   const KEY_FIELD_VALUE = 'KEY_FIELD_VALUE'
