@@ -5,46 +5,14 @@ const docClient = new AWS.DynamoDB.DocumentClient({
   region: 'eu-west-1'
 })
 
-export default class Model {
-  static dbGet(options={}) {
-    const key = options.key
-    if (!key) {
-      throw new Error('No key provided')
-    }
-
-    const params = {
-      TableName: this.getTableName(),
-      Key: options.key,
-      ...options
-    }
-
-    return docClient.get(params).promise()
-      .then((resp) => (
-        resp.Item
-      ))
-  }
-
-  static getTableName() {
-    const prefix = 'CONSTRUCTED-FROM-ENV-VARS'
-    return this.tableName || `${prefix}-${this.name}`
-  }
-
-  constructor(fields) {
+export class Model {
+  constructor(fields, initialValues={}) {
     if (typeof fields !== 'object' || fields === null) {
       throw new Error('No fields object provided!')
     }
 
     this.fields = fields
-
-    const partitionKey = Object.entries(fields).find((f) => (
-      f[1].partitionKey || f[1].hashKey
-    ))
-
-    const sortKey = Object.entries(fields).find((f) => (
-      f[1].sortKey
-    ))
-
-    this.primaryKey = { partitionKey, sortKey }
+    this.set(initialValues)
   }
 
   get(...fields) {
@@ -61,7 +29,6 @@ export default class Model {
     // Only return the value instead of object when querying for a single value
     return Object.keys(values).length === 1 ? values[fields[0]] : values
   }
-
 
   getValidationErrors() {
     return Object.entries(this.fields).map((f) => {
@@ -87,27 +54,6 @@ export default class Model {
     return fields
   }
 
-  dbSave(options={}) {
-    const params = {
-      TableName: this.constructor.getTableName(),
-      Item: this.getFieldValues(),
-      ReturnValues: 'NONE',
-      ...options
-    }
-
-    return new Promise((resolve, reject) => {
-      if (this.validate()) {
-        return docClient.put(params).promise()
-          .then((data) => {
-            return resolve('Success')
-          })
-          .catch((error) => {
-            return reject(error)
-          })
-      }
-      return reject('Invalid field data')
-    })
-  }
 
   set(fieldValues) {
     for (const fv of Object.entries(fieldValues)) {
@@ -124,6 +70,70 @@ export default class Model {
 
   validate() {
     return this.getValidationErrors().length === 0
+  }
+
+}
+
+export class DbModel extends Model {
+  static dbGet(options={}) {
+    const { key } = options
+    if (!key) {
+      throw new Error('No key provided')
+    }
+    delete options.key
+
+    const params = {
+      TableName: this.getTableName(),
+      Key: key,
+      ...options
+    }
+
+    return docClient.get(params).promise()
+      .then((resp) => (
+        resp.Item
+      ))
+  }
+
+  static getTableName() {
+    const prefix = [process.env.project, process.env.stage]
+      .filter((p) => p !== undefined)
+      .join('-')
+    return this.tableName || `${prefix}-${this.name}`
+  }
+
+  constructor(fields) {
+    super(fields)
+    const partitionKey = Object.entries(fields).find((f) => (
+      f[1].partitionKey || f[1].hashKey
+    ))
+
+    const sortKey = Object.entries(fields).find((f) => (
+      f[1].sortKey
+    ))
+
+    this.primaryKey = { partitionKey, sortKey }
+  }
+
+  dbSave(options={}) {
+    const params = {
+      TableName: this.constructor.getTableName(),
+      Item: this.getFieldValues(),
+      ReturnValues: 'NONE',
+      ...options
+    }
+
+    return new Promise((resolve, reject) => {
+      if (this.validate()) {
+        return docClient.put(params).promise()
+          .then((data) => {
+            return resolve(data)
+          })
+          .catch((error) => {
+            return reject(error)
+          })
+      }
+      return reject('Invalid field data')
+    })
   }
 
 }

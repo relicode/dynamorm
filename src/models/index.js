@@ -1,4 +1,7 @@
-import Model from './model'
+import { DbModel, Model } from './model'
 
-export default Model
+export {
+  DbModel,
+  Model
+}
 

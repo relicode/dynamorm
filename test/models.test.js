@@ -1,8 +1,19 @@
-import Model from '../src/models'
+import { DbModel, Model } from '../src/models'
 import { TextField } from '../src/fields'
 
 
 class MockModel extends Model {
+  constructor(options) {
+    const fields = {
+      keyField: new TextField(),
+      myTextField: new TextField(),
+      nullableField: new TextField({ allowNil: true })
+    }
+    super(fields, options)
+  }
+}
+
+class MockDbModel extends DbModel {
   constructor(options) {
     const fields = {
       keyField: new TextField({ hashKey: true }),
@@ -13,7 +24,7 @@ class MockModel extends Model {
   }
 }
 
-MockModel.tableName = 'anssin-lelutaulu'
+MockDbModel.tableName = 'anssin-lelutaulu'
 
 test('Model field value setting and changing works', () => {
   const model = new MockModel()
@@ -88,11 +99,11 @@ test('Model validation works', () => {
 })
 
 test('Model saving works', async () => {
-  const model = new MockModel()
+  const model = new MockDbModel()
   const KEY_FIELD_VALUE = 'KEY_FIELD_VALUE'
   const TEXT_FIELD_VALUE = 'TEXT_FIELD_VALUE'
   
-  expect(MockModel.getTableName()).toBe('anssin-lelutaulu')
+  expect(MockDbModel.getTableName()).toBe('anssin-lelutaulu')
 
   model.dbSave().catch((e) => {
     expect(e).toBe('Invalid field data')
@@ -146,7 +157,7 @@ test('Model instance getting works', async () => {
   }
 
   try {
-    const resp = await MockModel.dbGet(params)
+    const resp = await MockDbModel.dbGet(params)
     expect(resp).toEqual({
       myTextField: 'MY TEXT VALUE',
       keyField: 'KEY VALUE'
@@ -157,7 +168,7 @@ test('Model instance getting works', async () => {
 })
 
 test('getFieldValues returns name-value object', async () => {
-  const model = new MockModel()
+  const model = new MockDbModel()
   const KEY_FIELD_VALUE = 'KEY_FIELD_VALUE'
   const TEXT_FIELD_VALUE = 'TEXT_FIELD_VALUE'
 
@@ -177,7 +188,7 @@ test('getFieldValues returns name-value object', async () => {
     const data = await model.dbSave()
     expect(data).toBe('Success')
   } catch (e) {
-    console.log(e)
+    e
   }
 
 })
