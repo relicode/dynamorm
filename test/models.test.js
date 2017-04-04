@@ -48,7 +48,8 @@ test('Model field value setting and changing works', () => {
     nullableField: null
   })
 
-  expect(model.get('nullableField')).toBe(null)
+  const { nullableField } = model.get('nullableField')
+  expect(nullableField).toBe(null)
 
   expect(() => {
     model.get('A FIELD THAT DOESN\'T EXIST!')

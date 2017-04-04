@@ -26,8 +26,7 @@ export class Model {
       values[fieldName] = this.fields[fieldName].value
     }
 
-    // Only return the value instead of object when querying for a single value
-    return Object.keys(values).length === 1 ? values[fields[0]] : values
+    return values
   }
 
   getValidationErrors() {
