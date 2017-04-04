@@ -7,7 +7,7 @@ class MockModel extends Model {
     const fields = {
       keyField: new TextField({ hashKey: true }),
       myTextField: new TextField(),
-      nullableField: new TextField({ allowNull: true })
+      nullableField: new TextField({ allowNil: true })
     }
     super(fields, options)
   }

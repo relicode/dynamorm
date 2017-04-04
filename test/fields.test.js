@@ -69,7 +69,7 @@ test('Validation passes with an undefined value if allowed explicitly', () => {
     }
   }
 
-  const textField = new MockTextField({ initialValue: undefined, allowNull: true })
+  const textField = new MockTextField({ initialValue: undefined, allowNil: true })
   expect(textField.validate()).toBe(true)
 
   textField.value = 'OExyEH'

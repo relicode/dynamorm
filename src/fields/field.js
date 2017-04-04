@@ -10,7 +10,7 @@ export default class Field {
 
     const {
       allowEmpty,
-      allowNull,
+      allowNil,
       hashKey,
       initialValue,
       partitionKey,
@@ -56,17 +56,17 @@ export default class Field {
     }
 
     this.breakingValidators = {
-      allowNull, allowEmpty
+      allowNil, allowEmpty
     }
     this.value = initialValue
   }
 
   // Strong validators, that interrupt the checking process if passing
   checkBreakingValidators() {
-    const { allowNull, allowEmpty } = this.breakingValidators
+    const { allowNil, allowEmpty } = this.breakingValidators
     const { value } = this
 
-    if (allowNull && value == null) { // allow both null and undefined
+    if (allowNil && value == null) { // allow both null and undefined
       return true
     }
 

@@ -119,6 +119,7 @@ export default class Model {
         throw new Error('No such field: ' + name)
       }
     }
+    return this
   }
 
   validate() {
